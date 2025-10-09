@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "mcp-filter",
+      "args": [
+        "run",
+        "-t", "stdio",
+        "--stdio-command", "npx",
+        "--stdio-arg", "-y @supabase/mcp-server-supabase@latest --access-token YOUR_TOKEN",
+        "-a", "execute_sql,list_tables,get_project"
+      ]
+    },
+    "linear": {
+      "command": "mcp-filter",
+      "args": [
+        "run",
+        "-t", "stdio",
+        "--stdio-command", "npx",
+        "--stdio-arg", "-y mcp-remote https://mcp.linear.app/sse",
+        "-a", "get_issue,list_issues,create_issue,update_issue,create_comment"
+      ]
+    }
+  }
+}
