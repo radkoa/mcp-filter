@@ -6,7 +6,7 @@
 
 ## Before & After
 
-**Before:** Unfiltered MCP servers consume ~50k tokens on Claude Code startup
+**Before:** Unfiltered MCP servers consumed ~50k tokens on a fresh Claude Code session
 
 ```
 ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁ ⛁   claude-sonnet-4-5 · 112k/200k tokens (56%)
@@ -156,7 +156,7 @@ This exposes all 29 tools (**~20.8k tokens**):
 }
 ```
 
-This only exposes 3 tools we allowed (**~1.9k tokens** - 91% reduction):
+This only exposes 3 tools we allowed (**~1.9k tokens** = 91% reduction!):
 
 ```
 └ mcp__supabase__get_project (supabase): 605 tokens
@@ -198,7 +198,7 @@ This only exposes 3 tools we allowed (**~1.9k tokens** - 91% reduction):
 }
 ```
 
-Adjust tokens/headers to match your environment; the filter never logs or exposes them.
+Adjust auth-tokens/headers to match your environment; the filter never logs or exposes them.
 
 ## Configuration Reference
 
