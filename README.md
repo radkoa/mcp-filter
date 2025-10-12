@@ -42,8 +42,20 @@ Filter only the tools you need, save context for longer sessions.
 
 Python 3.10+ is supported; 3.11 is recommended.
 
+### Using pip
+
 ```bash
 pip install mcp-filter
+```
+
+### Using uv (faster, modern alternative)
+
+```bash
+# Run directly without installing (like npx)
+uvx mcp-filter --version
+
+# Or install globally
+uv tool install mcp-filter
 ```
 
 **From source (development):**
@@ -174,6 +186,22 @@ This only exposes 3 tools we allowed (**~1.9k tokens** = 91% reduction!):
 "supabase": {
   "command": "mcp-filter",
   "args": [
+    "run",
+    "-t", "stdio",
+    "--stdio-command", "npx",
+    "--stdio-arg", "-y @supabase/mcp-server-supabase@latest --access-token YOUR_TOKEN",
+    "-a", "execute_sql,list_tables,get_project"
+  ]
+}
+```
+
+**Or use `uvx` for faster, ephemeral execution:**
+
+```json
+"supabase": {
+  "command": "uvx",
+  "args": [
+    "mcp-filter",
     "run",
     "-t", "stdio",
     "--stdio-command", "npx",
