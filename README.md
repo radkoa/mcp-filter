@@ -226,7 +226,27 @@ This only exposes 3 tools we allowed (**~1.9k tokens** = 91% reduction!):
 }
 ```
 
+**Python MCP servers (uvx)** – wrap Python-based MCP servers like mcp-atlassian:
+
+```json
+"atlassian": {
+  "command": "mcp-filter",
+  "args": [
+    "run",
+    "-t", "stdio",
+    "--stdio-command", "uvx",
+    "--stdio-arg", "mcp-atlassian",
+    "--stdio-arg", "--confluence-url=https://your-instance.atlassian.net/wiki",
+    "--stdio-arg", "--confluence-username=your-email@example.com",
+    "--stdio-arg", "--confluence-token=YOUR_API_TOKEN",
+    "-a", "confluence_search,confluence_get_page"
+  ]
+}
+```
+
 Adjust auth-tokens/headers to match your environment; the filter never logs or exposes them.
+
+**Note:** Environment variables from the parent process are automatically passed to upstream MCP servers. This allows credentials set via `env` in your MCP client configuration (e.g., Claude Desktop, Claude Code) to reach the upstream server without exposing them in command-line arguments.
 
 ## Configuration Reference
 

@@ -108,12 +108,21 @@ async def make_upstream(cfg: UpstreamConfig) -> Upstream:
 
 
 async def _connect_stdio(fastmcp: Any, command: str, args: Optional[List[str]]) -> Any:
+    import os
+
     args = args or []
+    # Pass parent environment to child processes (for credentials, etc.)
+    env_vars = dict(os.environ)
 
     # Try modern FastMCP (>= 2.0) with Client + StdioTransport
     try:
         from fastmcp import Client
-        from fastmcp.client import NpxStdioTransport, PythonStdioTransport
+        from fastmcp.client import (
+            NpxStdioTransport,
+            PythonStdioTransport,
+            UvStdioTransport,
+            UvxStdioTransport,
+        )
 
         # Detect transport type based on command
         if command == "npx":
@@ -122,7 +131,26 @@ async def _connect_stdio(fastmcp: Any, command: str, args: Optional[List[str]]) 
                 raise ConfigError("npx transport requires a package name")
             package = args[0]
             package_args = args[1:] if len(args) > 1 else []
-            transport = NpxStdioTransport(package=package, args=package_args)
+            transport = NpxStdioTransport(package=package, args=package_args, env_vars=env_vars)
+        elif command == "uvx":
+            # uvx package args -> UvxStdioTransport(tool_name, tool_args)
+            if not args:
+                raise ConfigError("uvx transport requires a package name")
+            tool_name = args[0]
+            tool_args = args[1:] if len(args) > 1 else []
+            transport = UvxStdioTransport(
+                tool_name=tool_name, tool_args=tool_args, env_vars=env_vars
+            )
+        elif command == "uv":
+            # uv run script.py args -> UvStdioTransport(script, args)
+            # Expect: uv run <script_or_module> [args...]
+            if not args or args[0] != "run":
+                raise ConfigError("uv transport requires 'run' subcommand (e.g., 'uv run script.py')")
+            if len(args) < 2:
+                raise ConfigError("uv run requires a script or module name")
+            script = args[1]
+            script_args = args[2:] if len(args) > 2 else []
+            transport = UvStdioTransport(command=script, args=script_args, env_vars=env_vars)
         elif command.endswith(".py") or command == "python":
             # python script.py args -> PythonStdioTransport(script, args)
             if command == "python" and args:
@@ -131,7 +159,7 @@ async def _connect_stdio(fastmcp: Any, command: str, args: Optional[List[str]]) 
             else:
                 script = command
                 script_args = args
-            transport = PythonStdioTransport(script_path=script, args=script_args)
+            transport = PythonStdioTransport(script_path=script, args=script_args, env=env_vars)
         else:
             # Generic command -> try importing generic StdioTransport or NodeStdioTransport
             from fastmcp.client import StdioTransport
